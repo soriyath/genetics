@@ -4,16 +4,25 @@ defmodule Genetics.Evolution do
 
   import IEx
 
-  def fitness(target, candidate) do
-    candidate_fitness = check_fitness(target.genes, candidate.genes, candidate.fitness)
-    %Dna{fitness: :math.pow(candidate_fitness,4), genes: candidate.genes}
+  def phenotype(dna) do
+    dna.genes |> to_string
   end
 
-  def check_fitness([], [], fitness) do
+  def fitness(target, candidate) do
+    candidate_fitness = check_fitness(target.genes, candidate.genes, candidate.fitness)
+    
+    # normalize and make it exponentional
+    normalized_fitness = candidate_fitness / Enum.count(target.genes) * 100 # we need to work with natural numbers
+    exponentional_fitness = :math.pow(normalized_fitness, 4)
+
+    %Dna{fitness: exponentional_fitness, genes: candidate.genes}
+  end
+
+  defp check_fitness([], [], fitness) do
     fitness
   end
 
-  def check_fitness([t_char | t_tail], [c_char | c_tail], fitness) do
+  defp check_fitness([t_char | t_tail], [c_char | c_tail], fitness) do
     IO.puts "target char: #{t_char}, candidate char: #{c_char}"
     new_fitness = 
       case t_char == c_char do
@@ -36,11 +45,11 @@ defmodule Genetics.Evolution do
     %Dna{genes: mutated_genes} # we reset the fitness to zero
   end
 
-  def do_mutation(rate, [], new_genes) do
+  defp do_mutation(rate, [], new_genes) do
     new_genes |> Enum.reverse
   end
 
-  def do_mutation(rate, [head | tail], new_genes) do
+  defp do_mutation(rate, [head | tail], new_genes) do
     if :rand.uniform < rate do
       mutation = :rand.uniform(96) + 32
       do_mutation(rate, tail, [mutation | new_genes])
