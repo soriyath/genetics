@@ -2,13 +2,19 @@ defmodule Genetics.Shiva do
   import Genetics.{Population, Dna}
   alias Genetics.{Population, Dna, Shiva}
 
-  def crossover() do
-    IO.puts "Implement this!"
+  import IEx
+
+  # parentA and parentB are dna structs
+  def crossover(parentA, parentB) do
+    genome_length = Enum.count parentA.genes
+    midpoint = :rand.uniform genome_length
+    new_genes = Enum.slice(parentA.genes,0..midpoint-1) ++ Enum.slice(parentB.genes,midpoint..genome_length)
+    %Dna{genes: new_genes}
   end
 
   def mutate(%Dna{fitness: fitness, genes: genes}, rate) do
     mutated_genes = do_mutation(rate, genes, [])
-    %Dna{fitness: fitness, genes: mutated_genes}
+    %Dna{genes: mutated_genes} # we reset the fitness to zero
   end
 
   def do_mutation(rate, [], new_genes) do
@@ -22,5 +28,10 @@ defmodule Genetics.Shiva do
     else
       do_mutation(rate, tail, [head | new_genes])
     end
+  end
+
+  def seed do
+    << i1 :: unsigned-integer-32, i2 :: unsigned-integer-32, i3 :: unsigned-integer-32>> = :crypto.strong_rand_bytes(12)
+    :rand.seed(:exsplus, {i1, i2, i3})
   end
 end
