@@ -1,8 +1,27 @@
-defmodule Genetics.Shiva do
+defmodule Genetics.Evolution do
   import Genetics.{Population, Dna}
-  alias Genetics.{Population, Dna, Shiva}
+  alias Genetics.{Population, Dna, Evolution}
 
   import IEx
+
+  def fitness(target, candidate) do
+    candidate_fitness = check_fitness(target.genes, candidate.genes, candidate.fitness)
+    %Dna{fitness: :math.pow(candidate_fitness,4), genes: candidate.genes}
+  end
+
+  def check_fitness([], [], fitness) do
+    fitness
+  end
+
+  def check_fitness([t_char | t_tail], [c_char | c_tail], fitness) do
+    IO.puts "target char: #{t_char}, candidate char: #{c_char}"
+    new_fitness = 
+      case t_char == c_char do
+        true -> fitness + 1
+        false -> fitness
+      end
+    check_fitness(t_tail, c_tail, new_fitness)
+  end
 
   # parentA and parentB are dna structs
   def crossover(parentA, parentB) do
