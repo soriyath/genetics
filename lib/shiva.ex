@@ -6,8 +6,8 @@ defmodule Genetics.Shiva do
     IO.puts "Implement this!"
   end
 
-  def mutate(%Dna{fitness: fitness, genes: genes}, mutationRate) do
-    mutated_genes = do_mutation(mutationRate, genes, [])
+  def mutate(%Dna{fitness: fitness, genes: genes}, rate) do
+    mutated_genes = do_mutation(rate, genes, [])
     %Dna{fitness: fitness, genes: mutated_genes}
   end
 

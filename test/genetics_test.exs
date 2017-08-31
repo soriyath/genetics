@@ -9,15 +9,15 @@ defmodule GeneticsTest do
     assert Genetics.hello() == :world
   end
 
-  test "a mutation with a 100% changes the dna" do
+  test "a mutation with a 100% rate changes the dna" do
     original = %Dna{fitness: 0, genes: 'Truth'}
     mutation = Shiva.mutate(original, 1)
-    assert mutation.genes !== 'Truth'
+    assert mutation.genes != 'Truth'
   end
 
-  test "a mutation with a 0% does not change the dna" do
+  test "a mutation with a 0% rate does not change the dna" do
     original = %Dna{fitness: 0, genes: 'Truth'}
     mutation = Shiva.mutate(original, 0)
-    assert mutation.genes === 'Truth'
+    assert mutation.genes == 'Truth'
   end
 end
