@@ -23,7 +23,6 @@ defmodule Genetics.Evolution do
   end
 
   defp check_fitness([t_char | t_tail], [c_char | c_tail], fitness) do
-    IO.puts "target char: #{t_char}, candidate char: #{c_char}"
     new_fitness = 
       case t_char == c_char do
         true -> fitness + 1
