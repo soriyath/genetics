@@ -32,12 +32,16 @@ defmodule Genetics do
     IO.puts "Configuration:\n==============\n\ntarget: #{enigma}\npopulation size: #{population_size}\nmutation rate: #{mutation_rate}\n\n"
 
     # 1. generate a random population of N elements with random genetic material
-    p0 = Population.setup(target, population_size)
+    initial_population = Population.setup(target, population_size)
 
-    # 2. we loop until we find a satisfying fitness
-    p1 = shift_epoch(target, max_fitness, 1, p0, mutation_rate)
+    # 2.1 calculate fitness for N elements, try and make fitness exponential
+    p0 = Population.fitness(target, initial_population)
+    best_fit = Population.get_best_fit(p0)
 
-    Population.get_best_fit(p1)
+    # 2.2 we loop until we find a satisfying fitness
+    last_generation = shift_epoch(target, max_fitness, best_fit.fitness, p0, mutation_rate)
+
+    Population.get_best_fit last_generation
   end
 
   def guess(enigma, population_size, mutation_rate) do
@@ -51,18 +55,16 @@ defmodule Genetics do
   end
 
   defp shift_epoch(target, max_fitness, best_fitness, population, mutation_rate, old_fitness, epoch) when population |> is_list do
-    # 2.1 calculate fitness for N elements, try and make fitness exponential
-    p1 = Population.fitness(target, population) # TODO move this outside the loop
+    # 2.3 selection, reproduction and mutation
+    next_generation = 
+      Population.select_reproduce_and_mutate(population, mutation_rate)
+      |> (&Population.fitness(target, &1)).()
 
-    # 2.2 selection, reproduction and mutation
-    p2 = Population.select_reproduce_and_mutate(p1, mutation_rate)
-
-    p3 = Population.fitness(target, p2)
-    best_fit = Population.get_best_fit(p3)
+    best_fit = Population.get_best_fit next_generation
     IO.puts "epoch: #{epoch}, best fitness: #{best_fit.fitness}, with: #{best_fit.genes}, progression: #{best_fit.fitness / old_fitness}"
 
-    # start back at 2.1 with p3
-    shift_epoch(target, max_fitness, best_fit.fitness, p3, mutation_rate, best_fitness, epoch + 1)
+    # 2.5 start back at 2.3 with next_generation
+    shift_epoch(target, max_fitness, best_fit.fitness, next_generation, mutation_rate, best_fitness, epoch + 1)
   end
 
   defp shift_epoch(target, max_fitness, best_fitness, population, mutation_rate, old_fitness, epoch) do

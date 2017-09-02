@@ -9,17 +9,16 @@ defmodule Genetics.Population do
   end
 
   def setup(target, size, population) do
-    genome_length = Enum.count target.genes
-    individual = get_individual(genome_length)
-    new_population = [individual | population]
-    setup(target, size - 1, new_population)
+    Enum.count(target.genes)
+    |> get_individual
+    |> (&setup(target, size - 1, [&1 | population])).()
   end
 
   defp get_individual(genome_length) do
-    dna = get_dna(genome_length, %Dna{})
+    get_dna genome_length
   end
 
-  defp get_dna(length, %Dna{genes: genes}) do
+  defp get_dna(length) do
     genes = Enum.map(1..length, fn _ ->
       :rand.uniform(96) + 32
     end)
@@ -48,8 +47,8 @@ defmodule Genetics.Population do
   end
 
   def fitness(target, [candidate | population_tail], new_population) do
-    individual = individual_fitness(target, candidate)
-    fitness(target, population_tail, [individual | new_population])
+    individual_fitness(target, candidate)
+    |> (&fitness(target, population_tail, [&1 | new_population])).()
   end
 
   defp individual_fitness(target, candidate) do
