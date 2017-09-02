@@ -2,8 +2,6 @@ defmodule Genetics.Population do
   import Genetics.Dna
   alias Genetics.Dna
 
-  import IEx
-
   def setup(target, size \\ 1_000, population \\ [])
 
   def setup(_, 0, population) do
@@ -31,11 +29,11 @@ defmodule Genetics.Population do
     get_dna(length - 1, %Dna{genes: new_genes})
   end
 
-  def get_max_fitness(population, initial \\ 0) do
+  def get_best_fit(population, initial \\ 0) do
     Enum.reduce(population, initial, fn(individual, best) ->
       best = 
         case individual.fitness > best do
-          true -> individual.fitness
+          true -> individual
           false -> best
         end
     end)
@@ -98,20 +96,20 @@ defmodule Genetics.Population do
 
   defp do_mutation(rate, [head | tail], new_genes) do
     if :rand.uniform < rate do
-      mutation = :rand.uniform(96) + 32
+      mutation = :rand.uniform(95) + 31
       do_mutation(rate, tail, [mutation | new_genes])
     else
       do_mutation(rate, tail, [head | new_genes])
     end
   end
 
-  def select_reproduce_and_mutate(population, new_population \\ [], diff \\ nil)
+  def select_reproduce_and_mutate(population, mutation_rate, new_population \\ [], diff \\ nil)
 
-  def select_reproduce_and_mutate(population, new_population, 0) do
+  def select_reproduce_and_mutate(population, mutation_rate, new_population, 0) do
     Enum.reverse new_population
   end
 
-  def select_reproduce_and_mutate(population, new_population, diff) when population |> is_list do
+  def select_reproduce_and_mutate(population, mutation_rate, new_population, diff) when population |> is_list do
     total_fitness =
       Enum.reduce(population, 0, fn(individual, sum) -> 
         sum = sum + individual.fitness
@@ -124,15 +122,15 @@ defmodule Genetics.Population do
     parentA = select(weighted_population)
     parentB = select(weighted_population)
 
-    child = crossover(parentA, parentB) |> mutate
+    child = crossover(parentA, parentB) |> mutate(mutation_rate)
 
     next_generation = [child | new_population]
-    missing_individuals = Enum.count(population) - Enum.count(new_population) - 1 
+    missing_individuals = Enum.count(population) - Enum.count(next_generation)
 
-    select_reproduce_and_mutate(population, next_generation, missing_individuals) 
+    select_reproduce_and_mutate(population, mutation_rate, next_generation, missing_individuals) 
   end
 
-  def select_reproduce_and_mutate(population, new_population, diff) do
+  def select_reproduce_and_mutate(population, mutation_rate, new_population, diff) do
     {:error, reason: "Population is not a list."}
   end
 

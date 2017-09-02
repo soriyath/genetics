@@ -1,58 +1,56 @@
 defmodule Genetics.Evolution do
   import Genetics.{Population, Dna}
-  alias Genetics.{Population, Dna, Evolution}
+  alias Genetics.{Population, Dna}
 
-  import IEx
+  def guess(enigma \\ 'To be or not to be, that is the question', population_size \\ 500, mutation_rate \\ 0.01)
 
-  # TODO add a predator ?
-
-  def guess(enigma \\ 'To be or not to be, that is the question')
-
-  def guess(enigma) when enigma |> is_bitstring do
-    enigma |> String.to_charlist |> guess
+  def guess(enigma, population_size, mutation_rate) when enigma |> is_bitstring do
+    enigma |> String.to_charlist |> guess(population_size, mutation_rate)
   end
 
-  def guess(enigma) when enigma |> is_list do
+  def guess(enigma, population_size, mutation_rate) when enigma |> is_list do
     # 0. configuration, seed CSPRNG (erlang) and set the target DNA
     seed
     target = %Dna{genes: enigma}
-    pop_size = 1_000
     max_fitness = :math.pow(100,4)
 
+    IO.puts "Configuration:\n==============\n\ntarget: #{enigma}\npopulation size: #{population_size}\nmutation rate: #{mutation_rate}\n\n"
+
     # 1. generate a random population of N elements with random genetic material
-    p0 = Population.setup(target, pop_size)
+    p0 = Population.setup(target, population_size)
 
     # 2. we loop until we find a satisfying fitness
-    p1 = shift_epoch(target, max_fitness, 0, p0)
+    p1 = shift_epoch(target, max_fitness, 1, p0, mutation_rate)
 
-    42
+    Population.get_best_fit(p1)
   end
 
-  def guess(enigma) do
+  def guess(enigma, population_size, mutation_rate) do
     {:error, reason: "Please enter a string value"}
   end
 
-  defp shift_epoch(target, max_fitness, best_fitness, population)
+  defp shift_epoch(target, max_fitness, best_fitness, population, mutation_rate, old_fitness \\ 1, epoch \\ 0)
 
-  defp shift_epoch(target, max_fitness, best_fitness,population) when best_fitness >= max_fitness do
+  defp shift_epoch(target, max_fitness, best_fitness, population, mutation_rate, old_fitness, epoch) when best_fitness >= max_fitness do
     population
   end
 
-  defp shift_epoch(target, max_fitness, best_fitness, population) when population |> is_list do
+  defp shift_epoch(target, max_fitness, best_fitness, population, mutation_rate, old_fitness, epoch) when population |> is_list do
     # 2.1 calculate fitness for N elements, try and make fitness exponential
     p1 = Population.fitness(target, population) # TODO move this outside the loop
 
     # 2.2 selection, reproduction and mutation
-    p2 = Population.select_reproduce_and_mutate(p1)
+    p2 = Population.select_reproduce_and_mutate(p1, mutation_rate)
 
     p3 = Population.fitness(target, p2)
-    new_best_fitness = Population.get_max_fitness(p3)
+    best_fit = Population.get_best_fit(p3)
+    IO.puts "epoch: #{epoch}, best fitness: #{best_fit.fitness}, with: #{best_fit.genes}, progression: #{best_fit.fitness / old_fitness}"
 
     # start back at 2.1 with p3
-    shift_epoch(target, max_fitness, new_best_fitness, p3)
+    shift_epoch(target, max_fitness, best_fit.fitness, p3, mutation_rate, best_fitness, epoch + 1)
   end
 
-  defp shift_epoch(target, max_fitness, best_fitness, population) do
+  defp shift_epoch(target, max_fitness, best_fitness, population, mutation_rate, old_fitness, epoch) do
     {:error, reason: "Population is not a list"}
   end
 

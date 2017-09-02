@@ -1,9 +1,8 @@
 defmodule GeneticsTest do
   use ExUnit.Case
-  doctest Genetics
 
-  import Genetics.{Evolution,Dna,Population}
-  alias Genetics.{Evolution,Dna,Population}
+  import Genetics.{Dna,Population}
+  alias Genetics.{Dna,Population}
 
   test "a mutation with a 100% rate changes the dna" do
     original = %Dna{genes: 'Truth'}
