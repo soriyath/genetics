@@ -2,6 +2,21 @@ defmodule Genetics.Evolution do
   import Genetics.{Population, Dna}
   alias Genetics.{Population, Dna}
 
+  @doc """
+  Guesses a target string using a population of randomly generated strings.
+
+  ## Parameters
+
+    - enigma: string or charlist representing the targetted string to guess, defaults to the Shakespeare sentence (To be or not...) ;
+    - population_size: integer representing the size of the population used by the algorithm, defaults to 500 ;
+    - mutation_rate: float representing the probability of a mutation occuring after reproduction (0 <= n <= 1), defaults to 1%.
+
+  ## Examples
+
+      iex> Genetics.Evolution.guess("Answer to the Ultimate Question of Life, the Universe, and Everything")
+      %Genetics.Dna{fitness: 1.0e8, genes: 'Answer to the Ultimate Question of Life, the Universe, and Everything'}
+
+  """
   def guess(enigma \\ 'To be or not to be, that is the question', population_size \\ 500, mutation_rate \\ 0.01)
 
   def guess(enigma, population_size, mutation_rate) when enigma |> is_bitstring do
