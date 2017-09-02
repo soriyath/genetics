@@ -16,6 +16,9 @@ defmodule Genetics do
       iex> Genetics.guess("Answer to the Ultimate Question of Life, the Universe, and Everything")
       %Genetics.Dna{fitness: 1.0e8, genes: 'Answer to the Ultimate Question of Life, the Universe, and Everything'}
 
+      iex> Genetics.guess("My name is Alice.", 600, 0.03)
+      %Genetics.Dna{fitness: 1.0e8, genes: 'My name is Alice.'}
+
   """
   def guess(enigma \\ 'To be or not to be, that is the question', population_size \\ 500, mutation_rate \\ 0.01)
 
