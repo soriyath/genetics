@@ -87,13 +87,13 @@ defmodule Genetics.Population do
     %Dna{genes: new_genes}
   end
 
-  def mutate(%Dna{fitness: fitness, genes: genes}, rate) do
-    mutated_genes = do_mutation(rate, genes, [])
-    %Dna{genes: mutated_genes} # we reset the fitness to zero
+  def mutate(%Dna{fitness: fitness, genes: genes}, rate \\ 0.01) do
+    mutant_genes = do_mutation(rate, genes, [])
+    %Dna{genes: mutant_genes} # we reset the fitness to zero
   end
 
   defp do_mutation(rate, [], new_genes) do
-    new_genes |> Enum.reverse
+    Enum.reverse new_genes
   end
 
   defp do_mutation(rate, [head | tail], new_genes) do
@@ -105,4 +105,47 @@ defmodule Genetics.Population do
     end
   end
 
+  def select_reproduce_and_mutate(population, new_population \\ [], diff \\ nil)
+
+  def select_reproduce_and_mutate(population, new_population, 0) do
+    Enum.reverse new_population
+  end
+
+  def select_reproduce_and_mutate(population, new_population, diff) when population |> is_list do
+    total_fitness =
+      Enum.reduce(population, 0, fn(individual, sum) -> 
+        sum = sum + individual.fitness
+      end)
+    weighted_population =
+      Enum.map(population, fn(individual) -> 
+        %Dna{fitness: individual.fitness / total_fitness, genes: individual.genes}
+      end)
+
+    parentA = select(weighted_population)
+    parentB = select(weighted_population)
+
+    child = crossover(parentA, parentB) |> mutate
+
+    next_generation = [child | new_population]
+    missing_individuals = Enum.count(population) - Enum.count(new_population) - 1 
+
+    select_reproduce_and_mutate(population, next_generation, missing_individuals) 
+  end
+
+  def select_reproduce_and_mutate(population, new_population, diff) do
+    {:error, reason: "Population is not a list."}
+  end
+
+  def select(population, probability \\ :rand.uniform)
+
+  def select([], probability) do
+    nil
+  end
+
+  def select([individual | population_tail], probability) do
+    case probability < individual.fitness do
+      true -> individual
+      false -> select population_tail, probability - individual.fitness
+    end
+  end
 end
