@@ -18,7 +18,7 @@ Query the genetic algorithm with `Genetics.guess/3`.
 - **mutation_rate**: `float` representing the probability of a mutation occuring after reproduction (0 <= n <= 1), defaults to 1%.
 
 ## Documentation
-Currently not much of the code is documented. I've tried to do domain driver design (any feedback welcomed).
+Currently not much of the code is documented. I've tried to do domain driven design (any feedback welcomed).
 
 In `iex`, you can run `h Genetics.guess`.
 
