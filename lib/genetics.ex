@@ -1,4 +1,4 @@
-defmodule Genetics.Evolution do
+defmodule Genetics do
   import Genetics.{Population, Dna}
   alias Genetics.{Population, Dna}
 
@@ -13,7 +13,7 @@ defmodule Genetics.Evolution do
 
   ## Examples
 
-      iex> Genetics.Evolution.guess("Answer to the Ultimate Question of Life, the Universe, and Everything")
+      iex> Genetics.guess("Answer to the Ultimate Question of Life, the Universe, and Everything")
       %Genetics.Dna{fitness: 1.0e8, genes: 'Answer to the Ultimate Question of Life, the Universe, and Everything'}
 
   """

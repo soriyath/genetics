@@ -1,8 +1,8 @@
 defmodule GeneticsTest do
   use ExUnit.Case
 
-  import Genetics.{Dna,Population}
-  alias Genetics.{Dna,Population}
+  import Genetics.{Dna, Population}
+  alias Genetics.{Dna, Population}
 
   test "a mutation with a 100% rate changes the dna" do
     original = %Dna{genes: 'Truth'}
@@ -49,7 +49,7 @@ defmodule GeneticsTest do
       %Dna{fitness: 0.1, genes: 'cvbncvbnmvcbnmvnbmvnbmcm'},
       %Dna{fitness: 0.1, genes: 'ertzurtuzertzertzertzert'},
     ]
-    new_population = Population.select_reproduce_and_mutate(old_population)
+    new_population = Population.select_reproduce_and_mutate(old_population, 0.01)
 
     assert old_population -- new_population != []
   end
@@ -67,7 +67,8 @@ defmodule GeneticsTest do
       %Dna{fitness: 0.1, genes: 'cvbncvbnmvcbnmvnbmvnbmcm'},
       %Dna{fitness: 0.1, genes: 'ertzurtuzertzertzertzert'},
     ]
-    new_population = Population.select_reproduce_and_mutate(old_population)
+
+    new_population = Population.select_reproduce_and_mutate(old_population, 0.01)
 
     assert Enum.count(old_population) == Enum.count(new_population)
   end

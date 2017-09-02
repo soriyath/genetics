@@ -9,7 +9,7 @@ This is a *loose* Elixir port of the genetic algorithm shown by Daniel Shiffmann
 ## Running
 Install [a working Elixir environement](https://elixir-lang.org/install.html).
 Run `iex -S mix` in the terminal (no *sugar* shell, sorry).
-Query the genetic algorithm with `Genetics.Evolution.guess/3`.
+Query the genetic algorithm with `Genetics.guess/3`.
 
 `guess/3` arguments are :
 
@@ -20,7 +20,7 @@ Query the genetic algorithm with `Genetics.Evolution.guess/3`.
 ## Documentation
 Currently not much of the code is documented. I've tried to do domain driver design (any feedback welcomed).
 
-In `iex`, you can run `h Genetics.Evolution.guess`.
+In `iex`, you can run `h Genetics.guess`.
 
 ## Benchmarking
 ### Install bmark (dependency)

@@ -19,14 +19,12 @@ defmodule Genetics.Population do
     dna = get_dna(genome_length, %Dna{})
   end
 
-  defp get_dna(0, dna) do
-    dna
-  end
-
   defp get_dna(length, %Dna{genes: genes}) do
-    gene = :rand.uniform(96) + 32
-    new_genes = [gene | genes] # reverse order eventually, but we don't care because it's random anyways
-    get_dna(length - 1, %Dna{genes: new_genes})
+    genes = Enum.map(1..length, fn _ ->
+      :rand.uniform(96) + 32
+    end)
+
+    %Dna{genes: genes}
   end
 
   def get_best_fit(population, initial \\ 0) do
@@ -43,15 +41,15 @@ defmodule Genetics.Population do
     dna.genes |> to_string
   end
 
-  def fitness(target, population, newPopulation \\ [])
+  def fitness(target, population, new_population \\ [])
 
-  def fitness(target, [], newPopulation) do
-    Enum.reverse newPopulation
+  def fitness(target, [], new_population) do
+    Enum.reverse new_population
   end
 
-  def fitness(target, [candidate | population_tail], newPopulation) do
+  def fitness(target, [candidate | population_tail], new_population) do
     individual = individual_fitness(target, candidate)
-    fitness(target, population_tail, [individual | newPopulation])
+    fitness(target, population_tail, [individual | new_population])
   end
 
   defp individual_fitness(target, candidate) do
@@ -77,11 +75,11 @@ defmodule Genetics.Population do
     check_fitness(t_tail, c_tail, new_fitness)
   end
 
-  # parentA and parentB are dna structs
-  def crossover(parentA, parentB) do
-    genome_length = Enum.count parentA.genes
+  # parent_a and parent_b are dna structs
+  def crossover(parent_a, parent_b) do
+    genome_length = Enum.count parent_a.genes
     midpoint = :rand.uniform genome_length
-    new_genes = Enum.slice(parentA.genes,0..midpoint-1) ++ Enum.slice(parentB.genes,midpoint..genome_length)
+    new_genes = Enum.slice(parent_a.genes,0..midpoint-1) ++ Enum.slice(parent_b.genes,midpoint..genome_length)
     %Dna{genes: new_genes}
   end
 
@@ -119,10 +117,10 @@ defmodule Genetics.Population do
         %Dna{fitness: individual.fitness / total_fitness, genes: individual.genes}
       end)
 
-    parentA = select(weighted_population)
-    parentB = select(weighted_population)
+    parent_a = select(weighted_population)
+    parent_b = select(weighted_population)
 
-    child = crossover(parentA, parentB) |> mutate(mutation_rate)
+    child = crossover(parent_a, parent_b) |> mutate(mutation_rate)
 
     next_generation = [child | new_population]
     missing_individuals = Enum.count(population) - Enum.count(next_generation)
